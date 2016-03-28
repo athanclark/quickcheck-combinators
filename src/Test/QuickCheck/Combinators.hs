@@ -21,6 +21,7 @@ instance ( Foldable f
          , KnownNat n
          ) => Arbitrary (AtLeast (n :: Nat) f x) where
   arbitrary = do
-    let n' = natVal (Proxy :: Proxy n)
-    (fs :: f x) <- arbitrary `suchThat` (\fs' -> length fs' >= fromIntegral n')
+    let n' = fromIntegral $ natVal (Proxy :: Proxy n)
+    (fs :: f x) <- arbitrary `suchThat`
+                     (\fs' -> length fs' >= n')
     return (AtLeast fs)
