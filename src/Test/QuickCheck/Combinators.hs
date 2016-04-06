@@ -13,20 +13,18 @@ import Data.Proxy
 
 import Data.Maybe (fromMaybe)
 import Data.Unfoldable (Unfoldable, fromList)
-import Control.Applicative (Alternative (empty))
 import Control.Monad (replicateM)
 
 import Test.QuickCheck
 
 
--- * Foldable
 
 -- | Generate with a minimum, inclusive size as @n :: Nat@
-newtype AtLeast (n :: Nat) f x = AtLeast (f x)
+newtype AtLeast (n :: Nat) t x = AtLeast (t x)
   deriving (Show, Read, Eq, Ord, Enum)
 
 instance ( Unfoldable t
-         , Alternative t
+         , Monoid (t x)
          , Arbitrary x
          , Arbitrary (t x)
          , KnownNat n
@@ -34,15 +32,15 @@ instance ( Unfoldable t
   arbitrary = sized $ \m' -> do
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
     k <- choose (n', m')
-    (ts :: t x) <- (fromMaybe empty . fromList) <$> replicateM k arbitrary
+    (ts :: t x) <- (fromMaybe mempty . fromList) <$> replicateM k arbitrary
     return (AtLeast ts)
 
 -- | Generate with a maximum, inclusive size as @n :: Nat@
-newtype AtMost (n :: Nat) f x = AtMost (f x)
+newtype AtMost (n :: Nat) t x = AtMost (t x)
   deriving (Show, Read, Eq, Ord, Enum)
 
 instance ( Unfoldable t
-         , Alternative t
+         , Monoid (t x)
          , Arbitrary x
          , Arbitrary (t x)
          , KnownNat m
@@ -50,15 +48,15 @@ instance ( Unfoldable t
   arbitrary = sized $ \m'' -> do
     let m' = fromIntegral $ natVal (Proxy :: Proxy m)
     k <- choose (0, min m' m'')
-    (ts :: t x) <- (fromMaybe empty . fromList) <$> replicateM k arbitrary
+    (ts :: t x) <- (fromMaybe mempty . fromList) <$> replicateM k arbitrary
     return (AtMost ts)
 
 -- | Generate between the inclusive range of @n :: Nat@ and @m :: Nat@
-newtype Between (n :: Nat) (m :: Nat) f x = Between (f x)
+newtype Between (n :: Nat) (m :: Nat) t x = Between (t x)
   deriving (Show, Read, Eq, Ord, Enum)
 
 instance ( Unfoldable t
-         , Alternative t
+         , Monoid (t x)
          , Arbitrary x
          , Arbitrary (t x)
          , KnownNat n
@@ -68,9 +66,8 @@ instance ( Unfoldable t
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
         m' = fromIntegral $ natVal (Proxy :: Proxy m)
     k <- choose (n', min m' m'')
-    (ts :: t x) <- (fromMaybe empty . fromList) <$> replicateM k arbitrary
+    (ts :: t x) <- (fromMaybe mempty . fromList) <$> replicateM k arbitrary
     return (Between ts)
 
 -- | Convenience for @AtLeast 1@
-newtype NonEmpty f x = NonEmpty (AtLeast 1 f x)
-  deriving (Show, Read, Eq, Ord, Enum, Arbitrary)
+type NonMempty = AtLeast 1
