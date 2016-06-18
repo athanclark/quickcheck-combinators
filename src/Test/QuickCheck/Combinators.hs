@@ -35,7 +35,7 @@ instance ( UnfoldableR p t
   arbitrary = sized $ \m' -> do
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
     k <- choose (min n' m', max n' m')
-    ts <- (fromMaybe mempty . fromList) <$> replicateM k arbitrary
+    ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtLeast $ ts
 
 instance ( Arbitrary a
@@ -47,7 +47,7 @@ instance ( Arbitrary a
     k <- choose (min n' m, max n' m)
     ts <- mkOrd <$> replicateM k arbitrary
     return . AtLeast $ ts
-    
+
 -- | Generate with a maximum, inclusive size as @n :: Nat@
 newtype AtMost (n :: Nat) t a = AtMost (t a)
   deriving (Show, Read, Eq, Ord, Enum)
@@ -61,7 +61,7 @@ instance ( UnfoldableR p t
   arbitrary = sized $ \m'' -> do
     let m' = fromIntegral $ natVal (Proxy :: Proxy m)
     k <- choose (0, min m' m'')
-    ts <- (fromMaybe mempty . fromList) <$> replicateM k arbitrary
+    ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtMost $ ts
 
 instance ( Arbitrary a
@@ -72,7 +72,7 @@ instance ( Arbitrary a
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
     k <- choose (0, min n' m)
     ts <- mkOrd <$> replicateM k arbitrary
-    return . AtMost $ ts    
+    return . AtMost $ ts
 
 -- | Generate between the inclusive range of @n :: Nat@ and @m :: Nat@
 newtype Between (n :: Nat) (m :: Nat) t a = Between (t a)
@@ -89,7 +89,7 @@ instance ( UnfoldableR p t
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
         m' = fromIntegral $ natVal (Proxy :: Proxy m)
     k <- choose (n', min m' m'')
-    ts <- (fromMaybe mempty . fromList) <$> replicateM k arbitrary
+    ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . Between $ ts
 
 instance ( Arbitrary a
