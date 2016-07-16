@@ -7,6 +7,11 @@
   , GeneralizedNewtypeDeriving
   , ConstraintKinds
   , UndecidableInstances
+  , DeriveDataTypeable
+  , DeriveGeneric
+  , DeriveFunctor
+  , DeriveFoldable
+  , DeriveTraversable
   #-}
 
 module Test.QuickCheck.Combinators where
@@ -22,11 +27,16 @@ import Test.QuickCheck
 
 import qualified Data.List as L (sort)
 
+import Data.Data
+import GHC.Generics
+
 
 
 -- | Generate with a minimum, inclusive size as @n :: Nat@
-newtype AtLeast (n :: Nat) t a = AtLeast (t a)
-  deriving (Show, Read, Eq, Ord, Enum)
+newtype AtLeast (n :: Nat) t a = AtLeast
+  { getAtLeast :: t a
+  } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
+             , Applicative, Monad, Foldable, Traversable, Monoid)
 
 instance ( UnfoldableR p t
          , Monoid (t a)
@@ -53,8 +63,10 @@ instance ( Arbitrary a
     return . AtLeast $ ts
 
 -- | Generate with a maximum, inclusive size as @n :: Nat@
-newtype AtMost (n :: Nat) t a = AtMost (t a)
-  deriving (Show, Read, Eq, Ord, Enum)
+newtype AtMost (n :: Nat) t a = AtMost
+  { getAtMost :: t a
+  } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
+             , Applicative, Monad, Foldable, Traversable, Monoid)
 
 instance ( UnfoldableR p t
          , Monoid (t a)
@@ -81,8 +93,10 @@ instance ( Arbitrary a
     return . AtMost $ ts
 
 -- | Generate between the inclusive range of @n :: Nat@ and @m :: Nat@
-newtype Between (n :: Nat) (m :: Nat) t a = Between (t a)
-  deriving (Show, Read, Eq, Ord, Enum)
+newtype Between (n :: Nat) (m :: Nat) t a = Between
+  { getBetween :: t a
+  } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
+             , Applicative, Monad, Foldable, Traversable, Monoid)
 
 instance ( UnfoldableR p t
          , Monoid (t a)
