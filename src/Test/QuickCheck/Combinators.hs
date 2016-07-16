@@ -22,6 +22,8 @@ import Test.QuickCheck
 
 import qualified Data.List as L (sort)
 
+
+
 -- | Generate with a minimum, inclusive size as @n :: Nat@
 newtype AtLeast (n :: Nat) t a = AtLeast (t a)
   deriving (Show, Read, Eq, Ord, Enum)
@@ -34,17 +36,19 @@ instance ( UnfoldableR p t
          ) => Arbitrary (AtLeast (n :: Nat) t a) where
   arbitrary = sized $ \m' -> do
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
-    k <- choose (min n' m', max n' m')
+    k  <- choose (min n' m', max n' m')
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtLeast $ ts
 
 instance ( Arbitrary a
          , Ord a
+         , UnfoldableR p []
+         , p a
          , KnownNat n) => Arbitrary (AtLeast (n :: Nat) OrderedList a) where
   arbitrary = sized $ \m -> do
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
-    k <- choose (min n' m, max n' m)
+    k  <- choose (min n' m, max n' m)
     ts <- mkOrd <$> replicateM k arbitrary
     return . AtLeast $ ts
 
@@ -66,6 +70,8 @@ instance ( UnfoldableR p t
 
 instance ( Arbitrary a
          , Ord a
+         , UnfoldableR p []
+         , p a
          , KnownNat n) => Arbitrary (AtMost (n :: Nat) OrderedList a) where
   arbitrary = sized $ \m -> do
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
@@ -95,6 +101,8 @@ instance ( UnfoldableR p t
 instance ( Arbitrary a
          , Ord a
          , KnownNat n
+         , UnfoldableR p []
+         , p a
          , KnownNat m) => Arbitrary (Between (n :: Nat) (m :: Nat) OrderedList a) where
   arbitrary = sized $ \s -> do
     let n' = fromIntegral $ natVal (Proxy :: Proxy n)
