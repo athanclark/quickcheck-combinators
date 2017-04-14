@@ -38,7 +38,8 @@ newtype AtLeast (n :: Nat) t a = AtLeast
   } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
              , Applicative, Monad, Foldable, Traversable, Monoid)
 
-instance ( UnfoldableR p t
+instance
+         ( UnfoldableR p t
          , Monoid (t a)
          , Arbitrary a
          , KnownNat n
@@ -50,7 +51,8 @@ instance ( UnfoldableR p t
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtLeast $ ts
 
-instance ( Arbitrary a
+instance {-# OVERLAPPING #-}
+         ( Arbitrary a
          , Ord a
          , UnfoldableR p []
          , p a
@@ -80,7 +82,8 @@ instance ( UnfoldableR p t
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtMost $ ts
 
-instance ( Arbitrary a
+instance {-# OVERLAPPING #-}
+         ( Arbitrary a
          , Ord a
          , UnfoldableR p []
          , p a
@@ -112,7 +115,8 @@ instance ( UnfoldableR p t
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . Between $ ts
 
-instance ( Arbitrary a
+instance {-# OVERLAPPING #-}
+         ( Arbitrary a
          , Ord a
          , KnownNat n
          , UnfoldableR p []
