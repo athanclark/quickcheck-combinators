@@ -47,9 +47,9 @@ instance
          ) => Arbitrary (AtLeast (n :: Nat) t a) where
   arbitrary = sized $ \s -> do
     let n' = fromIntegral (natVal (Proxy :: Proxy n))
-    k  <- choose (n', s)
+    k  <- choose (n', max s n')
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
-    return . AtLeast $ ts
+    return (AtLeast ts)
 
 instance {-# OVERLAPPING #-}
          ( Arbitrary a
@@ -60,9 +60,9 @@ instance {-# OVERLAPPING #-}
   arbitrary = sized $ \s -> do
     let n' = fromIntegral (natVal (Proxy :: Proxy n))
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
-    k  <- choose (n', s)
+    k  <- choose (n', max s n')
     ts <- mkOrd <$> replicateM k arbitrary
-    return . AtLeast $ ts
+    return (AtLeast ts)
 
 -- | Generate with a maximum, inclusive size as @n :: Nat@
 newtype AtMost (n :: Nat) t a = AtMost
@@ -80,7 +80,7 @@ instance ( UnfoldableR p t
     let m' = fromIntegral (natVal (Proxy :: Proxy m))
     k <- choose (0, min m' s)
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
-    return . AtMost $ ts
+    return (AtMost ts)
 
 instance {-# OVERLAPPING #-}
          ( Arbitrary a
@@ -93,7 +93,7 @@ instance {-# OVERLAPPING #-}
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
     k <- choose (0, min m' s)
     ts <- mkOrd <$> replicateM k arbitrary
-    return . AtMost $ ts
+    return (AtMost ts)
 
 -- | Generate between the inclusive range of @n :: Nat@ and @m :: Nat@
 newtype Between (n :: Nat) (m :: Nat) t a = Between
@@ -111,9 +111,9 @@ instance ( UnfoldableR p t
   arbitrary = sized $ \s -> do
     let n' = fromIntegral (natVal (Proxy :: Proxy n))
         m' = fromIntegral (natVal (Proxy :: Proxy m))
-    k <- choose (n', min m' s)
+    k <- choose (n', max n' (min m' s))
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
-    return . Between $ ts
+    return (Between ts)
 
 instance {-# OVERLAPPING #-}
          ( Arbitrary a
@@ -126,9 +126,9 @@ instance {-# OVERLAPPING #-}
     let n' = fromIntegral (natVal (Proxy :: Proxy n))
         m' = fromIntegral (natVal (Proxy :: Proxy m))
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
-    k <- choose (n', min m' s)
+    k <- choose (n', max n' (min m' s))
     ts <- mkOrd <$> replicateM k arbitrary
-    return . Between $ ts
+    return (Between ts)
 
 -- | Convenience for @AtLeast 1@
 type NonMempty = AtLeast 1
