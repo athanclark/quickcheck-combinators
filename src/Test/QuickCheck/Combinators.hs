@@ -45,9 +45,9 @@ instance
          , KnownNat n
          , p a
          ) => Arbitrary (AtLeast (n :: Nat) t a) where
-  arbitrary = sized $ \m' -> do
-    let n' = fromIntegral $ natVal (Proxy :: Proxy n)
-    k  <- choose (min n' m', max n' m')
+  arbitrary = sized $ \s -> do
+    let n' = fromIntegral (natVal (Proxy :: Proxy n))
+    k  <- choose (n', s)
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtLeast $ ts
 
@@ -57,10 +57,10 @@ instance {-# OVERLAPPING #-}
          , UnfoldableR p []
          , p a
          , KnownNat n) => Arbitrary (AtLeast (n :: Nat) OrderedList a) where
-  arbitrary = sized $ \m -> do
-    let n' = fromIntegral $ natVal (Proxy :: Proxy n)
+  arbitrary = sized $ \s -> do
+    let n' = fromIntegral (natVal (Proxy :: Proxy n))
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
-    k  <- choose (min n' m, max n' m)
+    k  <- choose (n', s)
     ts <- mkOrd <$> replicateM k arbitrary
     return . AtLeast $ ts
 
@@ -76,9 +76,9 @@ instance ( UnfoldableR p t
          , KnownNat m
          , p a
          ) => Arbitrary (AtMost (m :: Nat) t a) where
-  arbitrary = sized $ \m'' -> do
-    let m' = fromIntegral $ natVal (Proxy :: Proxy m)
-    k <- choose (0, min m' m'')
+  arbitrary = sized $ \s -> do
+    let m' = fromIntegral (natVal (Proxy :: Proxy m))
+    k <- choose (0, min m' s)
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . AtMost $ ts
 
@@ -88,10 +88,10 @@ instance {-# OVERLAPPING #-}
          , UnfoldableR p []
          , p a
          , KnownNat n) => Arbitrary (AtMost (n :: Nat) OrderedList a) where
-  arbitrary = sized $ \m -> do
-    let n' = fromIntegral $ natVal (Proxy :: Proxy n)
+  arbitrary = sized $ \s -> do
+    let m' = fromIntegral $ natVal (Proxy :: Proxy n)
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
-    k <- choose (0, min n' m)
+    k <- choose (0, min m' s)
     ts <- mkOrd <$> replicateM k arbitrary
     return . AtMost $ ts
 
@@ -108,10 +108,10 @@ instance ( UnfoldableR p t
          , KnownNat m
          , p a
          ) => Arbitrary (Between (n :: Nat) (m :: Nat) t a) where
-  arbitrary = sized $ \m'' -> do
-    let n' = fromIntegral $ natVal (Proxy :: Proxy n)
-        m' = fromIntegral $ natVal (Proxy :: Proxy m)
-    k <- choose (n', min m' m'')
+  arbitrary = sized $ \s -> do
+    let n' = fromIntegral (natVal (Proxy :: Proxy n))
+        m' = fromIntegral (natVal (Proxy :: Proxy m))
+    k <- choose (n', min m' s)
     ts <- fromMaybe mempty . fromList <$> replicateM k arbitrary
     return . Between $ ts
 
@@ -123,8 +123,8 @@ instance {-# OVERLAPPING #-}
          , p a
          , KnownNat m) => Arbitrary (Between (n :: Nat) (m :: Nat) OrderedList a) where
   arbitrary = sized $ \s -> do
-    let n' = fromIntegral $ natVal (Proxy :: Proxy n)
-        m' = fromIntegral $ natVal (Proxy :: Proxy m)
+    let n' = fromIntegral (natVal (Proxy :: Proxy n))
+        m' = fromIntegral (natVal (Proxy :: Proxy m))
         mkOrd = Ordered . L.sort . fromMaybe mempty . fromList
     k <- choose (n', min m' s)
     ts <- mkOrd <$> replicateM k arbitrary
