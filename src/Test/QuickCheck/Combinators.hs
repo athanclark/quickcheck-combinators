@@ -36,7 +36,7 @@ import GHC.Generics
 newtype AtLeast (n :: Nat) t a = AtLeast
   { getAtLeast :: t a
   } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
-             , Applicative, Monad, Foldable, Traversable, Monoid)
+             , Applicative, Monad, Foldable, Traversable, Semigroup, Monoid)
 
 instance
          ( UnfoldableR p t
@@ -68,7 +68,7 @@ instance {-# OVERLAPPING #-}
 newtype AtMost (n :: Nat) t a = AtMost
   { getAtMost :: t a
   } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
-             , Applicative, Monad, Foldable, Traversable, Monoid)
+             , Applicative, Monad, Foldable, Traversable, Semigroup, Monoid)
 
 instance ( UnfoldableR p t
          , Monoid (t a)
@@ -99,7 +99,7 @@ instance {-# OVERLAPPING #-}
 newtype Between (n :: Nat) (m :: Nat) t a = Between
   { getBetween :: t a
   } deriving (Show, Read, Eq, Ord, Enum, Data, Typeable, Generic, Functor
-             , Applicative, Monad, Foldable, Traversable, Monoid)
+             , Applicative, Monad, Foldable, Traversable, Semigroup, Monoid)
 
 instance ( UnfoldableR p t
          , Monoid (t a)

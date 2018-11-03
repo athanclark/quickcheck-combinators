@@ -1,31 +1,18 @@
 # quickcheck-combinators
 
-TODO: Write description here
+Simply wrap the type you want to generate (assuming it satisfies all the necessary constraints) to refine the terms generated:
 
-## Installation
 
-TODO: Write installation instructions here
+```haskell
+{-# LANGUAGE DataKinds #-}
 
-## Usage
+import Data.Set (Set)
+import Test.QuickCheck
+import Test.QuickCheck.Instances
+import GHC.TypeLits
 
-### Creating `x`
-
-TODO: Write usage instructions here
-
-### Combining `x`
-
-TODO: Write usage instructions here
-
-### Consuming `x`
-
-TODO: Write usage instructions here
-
-## How to run tests
-
+instance Arbitrary LinearEquation where
+  arbitrary = do
+    vars <- arbitrary :: Gen (AtLeast 3 Set String)
+    -- ...
 ```
-cabal configure --enable-tests && cabal build && cabal test
-```
-
-## Contributing
-
-TODO: Write contribution instructions here
