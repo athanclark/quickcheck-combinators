@@ -25,6 +25,7 @@ dependencies:
 - base >= 4.11 && < 5
 - QuickCheck
 - unfoldable-restricted >= 0.0.1
+- unit-constraint
 
 ghc-options:
   - -Wall

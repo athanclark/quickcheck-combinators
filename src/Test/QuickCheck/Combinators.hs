@@ -12,23 +12,25 @@
   , DeriveFunctor
   , DeriveFoldable
   , DeriveTraversable
+  , MonoLocalBinds
   #-}
 
 module Test.QuickCheck.Combinators where
 
-import GHC.TypeLits
-import Data.Proxy
+import GHC.TypeLits (Nat, KnownNat, natVal)
+import Data.Proxy (Proxy (..))
 
 import Data.Maybe (fromMaybe)
 import Data.Unfoldable.Restricted (UnfoldableR, fromList)
+import Data.Constraint.Unit (Unit)
 import Control.Monad (replicateM)
 
-import Test.QuickCheck
+import Test.QuickCheck (OrderedList (..), Arbitrary (..), choose, sized)
 
 import qualified Data.List as L (sort)
 
-import Data.Data
-import GHC.Generics
+import Data.Data (Data, Typeable)
+import GHC.Generics (Generic)
 
 
 
@@ -54,8 +56,8 @@ instance
 instance {-# OVERLAPPING #-}
          ( Arbitrary a
          , Ord a
-         , UnfoldableR p []
-         , p a
+         , UnfoldableR Unit []
+         , Unit a
          , KnownNat n) => Arbitrary (AtLeast (n :: Nat) OrderedList a) where
   arbitrary = sized $ \s -> do
     let n' = fromIntegral (natVal (Proxy :: Proxy n))
@@ -85,8 +87,8 @@ instance ( UnfoldableR p t
 instance {-# OVERLAPPING #-}
          ( Arbitrary a
          , Ord a
-         , UnfoldableR p []
-         , p a
+         , UnfoldableR Unit []
+         , Unit a
          , KnownNat n) => Arbitrary (AtMost (n :: Nat) OrderedList a) where
   arbitrary = sized $ \s -> do
     let m' = fromIntegral $ natVal (Proxy :: Proxy n)
@@ -119,8 +121,8 @@ instance {-# OVERLAPPING #-}
          ( Arbitrary a
          , Ord a
          , KnownNat n
-         , UnfoldableR p []
-         , p a
+         , UnfoldableR Unit []
+         , Unit a
          , KnownNat m) => Arbitrary (Between (n :: Nat) (m :: Nat) OrderedList a) where
   arbitrary = sized $ \s -> do
     let n' = fromIntegral (natVal (Proxy :: Proxy n))

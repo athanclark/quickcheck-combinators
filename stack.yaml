@@ -18,7 +18,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-12.0
+resolver: lts-21.12
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -38,7 +38,11 @@ packages:
 # Dependency packages to be pulled from upstream that are not in the resolver
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
-# extra-deps: []
+extra-deps:
+  - unfoldable-restricted-0.0.3
+  - git: https://github.com/athanclark/unfoldable.git
+    commit: c4f9b6cfbc129e5a7687684cde259120d1f96970
+
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
